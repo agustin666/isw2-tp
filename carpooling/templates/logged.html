@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>Carpooling Log In</title>
+<title>Carpooling Logged</title>
 <meta name="generator" content="Bluefish 2.2.2" >
 <meta name="author" content="Lucas" >
 <meta name="date" content="2012-05-16T23:29:21-0300" >
@@ -15,11 +15,6 @@
 <meta http-equiv="expires" content="0">
 </head>
 <body>
--	<form method="post">
-    {% csrf_token %}
-		{{ form.email_field.label_tag }}: {{ form.email_field }}<br>
-		{{ form.password_field.label_tag }}: {{ form.password_field }}<br>
-		<input type="submit" name="login" value="Entrar"/><br>
-	</form>
+  <p>User authenticated succesfully!</p>
 </body>
 </html>
