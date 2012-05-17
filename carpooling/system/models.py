@@ -1,4 +1,4 @@
-from django.db import models
+#from django.db import models
 
 class PlannedTrip:
 	def user
@@ -20,24 +20,31 @@ class Interval:
 	def end_hour
 
 class Route:
-	start #location
-	finish #location
+	def start #location
+	def finish #location
 
 class Zone:
-	name #string
+	def name #string
 
 class Location:
-	name #string
-	zone
+	def name #string
+	def zone
 
 class PlannedTripAdministrator:
-	planned_trips
+	def planned_trips
 
 class xxPlannedTripValidator:
-	validators #por ej de distancia
+	def validators #por ej de distancia
 
 class PlannedTripCoordinator: #el matching maker
 	def match(planned_trips)
 
 class Matching:
-	planned_trips
+	def planned_trips
+
+class Place
+	def address #String
+	def zone #String
+	
+	def distanceTo(self, anotherPlace):
+		return self.
