@@ -63,6 +63,8 @@ class Location(object):
 
 class PlannedTrip(object):
 
+    capacity
+    
     @classmethod
     def create(cls, aUser, aDate, anInterval, aRoute):
         planned_trip = cls()
@@ -71,3 +73,66 @@ class PlannedTrip(object):
         planned_trip.interval = anInterval
         planned_trip.route = aRoute
         return planned_trip
+
+	def capacity():
+		return capacity
+
+class Interval(object):
+
+    @classmethod
+    def create(cls, aStartHour, anEndHour):
+        interval = cls()
+        interval.start_hour = aStartHour
+        interval.end_hour = anEndHour
+        return interval
+
+class Route(object):
+
+    @classmethod
+    def create(cls, aStartLocation, aFinishLocation):
+        route = cls()
+        route.start = aStartLocation
+        route.finish = aFinishLocation
+        return route
+
+class Date(object):
+
+    @classmethod
+    def create(cls, aDay):
+        date = cls()
+        date.day = aDay
+        return date
+    
+    def capacity():
+        return capacity
+    
+class PlannedTripAsDriver(PlannedTrip):
+    
+    capacity
+    
+    def capacity():
+        return capacity
+    
+class PlannedTripAsPassenger(PlannedTrip):
+    
+    def capacity():
+        return 0
+    
+class PlannedTripCoordinator(object):
+    
+    def generateMatchings(plannedTrips):
+        orderedPlannedTrips = sorted(plannedTrips, key=lambda plannedTrip: plannedTrip.capacity())
+        matchings = list()
+        
+        for t1 in orderedPlannedTrips[:]:
+            orderedPlannedTrips.remove(t1)
+            if(t1.capacity() > 0):
+                matching = Matching.create(t1)
+                for t2 in reversed(orderedPlannedTrips)[:]:
+                    if(t1.matched(t2)):
+                        orderedPlannedTrips.remove(t2)
+                matchings.add(matching)
+            
+        return matchings  
+        
+ 
