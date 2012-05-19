@@ -1,3 +1,5 @@
+from abc import ABCMeta, abstractmethod
+
 class Users(object):
     
     @classmethod
@@ -76,6 +78,49 @@ class PlannedTrip(object):
 
     def capacity(self):
         return self.capacity
+
+class PlannedTripValidatorCollection(object):
+    
+    @classmethod
+    def create(cls):
+        ptv = cls()
+        ptv.validators = []
+        return ptv
+    
+    def add_validator(self, validator):
+        self.validators.append(validator)
+        return
+    
+    def validate(self, aPlannedTrip):
+        validation_results = []
+        for validator in self.validators:
+            validation_results.append(validator.validate(aPlannedTrip))
+        return validation_results
+
+class Validator(object):
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def validate(self, aPlannedtrip):
+        return
+
+class DistanceValidator(Validator):
+
+    def validate(self):
+        if plannedtrip.route.start != plannedtrip.route.finish:
+            return ValidationResult.create(aPlannedTrip, "OK")
+        else:
+            return ValidationResult.create(aPlannedTrip, "ERROR")
+    
+class ValidationResult(object):
+    __metaclass__ = ABCMeta
+
+    @classmethod
+    def create(cls, aSubject, aMessage):
+        validation_result = cls()
+        validation_result.subject = aSubject
+        validation_result.message = aMessage
+        return validation_result
 
 class Interval(object):
 
