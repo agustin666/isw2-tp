@@ -8,13 +8,13 @@ class Users(object):
         return users
     
     def user_is_registered(self, anEmail, aPassword):
-        for user in self.users:
+        for user in self.list:
             if user.email == anEmail and user.password == aPassword:
                 return True
         return False
 
     def get_user_with(self, anEmail, aPassword):
-        for user in self.users:
+        for user in self.list:
             if user.email == anEmail and user.password == aPassword:
                 return user
         return None
@@ -63,8 +63,6 @@ class Location(object):
 
 class PlannedTrip(object):
 
-    capacity
-    
     @classmethod
     def create(cls, aUser, aDate, anInterval, aRoute):
         planned_trip = cls()
@@ -105,8 +103,6 @@ class Date(object):
     
 class PlannedTripAsDriver(PlannedTrip):
     
-    capacity
-    
     def capacity(self):
         return self.capacity
     
@@ -130,6 +126,4 @@ class PlannedTripCoordinator(object):
                         orderedPlannedTrips.remove(t2)
                 matchings.add(matching)
             
-        return matchings  
-        
- 
+        return matchings
