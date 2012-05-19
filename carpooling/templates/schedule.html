@@ -1,16 +1,14 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-  <title>Car Pooling</title>
-</head>
-<body>
-	<div>
-		<h1>Car Pooling - Editar Plan Semanal</h1>
-		<span>David Trezeguet</span>
-		<a href="#">logout</a>
-	</div>
-	<div>
-	<form method="post" enctype="application/x-www-form-urlencoded">
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h2>Agenda</h2>
+
+<span>David Trezeguet</span>
+<a href="#">logout</a>
+
+<div>
+  <form method="post" enctype="application/x-www-form-urlencoded">
     {% csrf_token %}
     {{ schedule_formset.management_form }}
     <div><h3>Lunes</h3>{{ schedule_formset.forms.0 }}</div>
@@ -18,8 +16,8 @@
     <div><h3>Miercoles</h3>{{ schedule_formset.forms.2 }}</div>
     <div><h3>Jueves</h3>{{ schedule_formset.forms.3 }}</div>
     <div><h3>Viernes</h3>{{ schedule_formset.forms.4 }}</div>
-		<input type="submit" name="submit" value="Enviar" />
-	</form>
-	</div>
-</body>
-</html>
+    <input type="submit" name="submit" value="Enviar" />
+  </form>
+</div>
+
+{% endblock content %}

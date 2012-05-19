@@ -1,14 +1,14 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-  <title>Carpooling Log In</title>
-</head>
-<body>
-  <form method="post">
-    {% csrf_token %}
-		{{ form.email_field.label_tag }}: {{ form.email_field }}<br>
-		{{ form.password_field.label_tag }}: {{ form.password_field }}<br>
-		<input type="submit" name="login" value="Entrar"/><br>
-	</form>
-</body>
-</html>
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h2>Login</h2>
+
+<form method="post">
+  {% csrf_token %}
+	{{ form.email_field.label_tag }}: {{ form.email_field }}<br>
+	{{ form.password_field.label_tag }}: {{ form.password_field }}<br>
+	<input type="submit" name="login" value="Entrar"/><br>
+</form>
+
+{% endblock content %}

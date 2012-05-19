@@ -1,0 +1,13 @@
+<html>
+<head>
+  <title>Sistema de Carpooling</title>
+</head>
+<body>
+  <div id="menu">
+    <a href="{% url login %}">Login</a>
+    <a href="{% url registration %}">Registración</a>
+    <a href="{% url schedule %}">Agenda</a>
+  </div>
+  {% block content %}{% endblock content %}
+</body>
+</html>
