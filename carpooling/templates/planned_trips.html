@@ -1,23 +1,20 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-  <title>Car Pooling</title>
-</head>
-<body>
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h2>Agenda Generada Exitosamente!</h2>
+<span>David Trezeguet</span>
+<a href="#">logout</a>
+<h3>Estos son tus viajes registrados</h3>
+
+<div>
+{% for planned_trip in planned_trips %}
   <div>
-    <h1>Car Pooling - Plan Semanal Generado Exitosamente!</h1>
-    <span>David Trezeguet</span>
-    <a href="#">logout</a>
-    <h2>Estos son tus viajes registrados</h2>
+    <h3>{{planned_trip.date.day}}</h3>
+    Desde {{planned_trip.route.start}} a las {{planned_trip.interval.start_hour}}
+    hasta {{planned_trip.route.finish}} a las {{planned_trip.interval.end_hour}}
   </div>
-  <div>
-  {% for planned_trip in planned_trips %}
-    <div>
-      <h3>{{planned_trip.date.day}}</h3>
-      Desde {{planned_trip.route.start}} a las {{planned_trip.interval.start_hour}}
-      hasta {{planned_trip.route.finish}} a las {{planned_trip.interval.end_hour}}
-    </div>
-  {% endfor %}
-  </div>
-</body>
-</html>
+{% endfor %}
+</div>
+
+{% endblock content %}
