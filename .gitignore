@@ -5,3 +5,4 @@ local_settings.py
 bootstrap
 .project
 .pydevproject
+carpooling/base.db
