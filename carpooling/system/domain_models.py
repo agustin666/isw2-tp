@@ -73,7 +73,7 @@ class PlannedTrip(object):
         return planned_trip
 
     def capacity(self):
-        return self.capacity
+        pass
 
 class Interval(object):
 
@@ -124,7 +124,8 @@ class PlannedTripCoordinator(object):
                 for t2 in reversed(orderedPlannedTrips)[:]:
                     if(t1.matched(t2)):
                         orderedPlannedTrips.remove(t2)
-                matchings.add(matching)
+                        matching.add(t2)
+                matchings.append(matching)
             
         return matchings  
       
@@ -133,5 +134,31 @@ class PlannedTripCoordinator(object):
         return (plannedTrip1.route.start == plannedTrip2.route.start)
     
     
-      
+class PlannedTripAdministrator(object):
+    
+    @classmethod
+    def create(cls):
+        planned_trip_administrator = cls()
+        planned_trip_administrator.trip_validator = PlannedTripValidator.create()
+        planned_trip_administrator.trip_validator.add(DistanceValidator.create())
+        planned_trip_administrator.trip_coordinator = PlannedTripCoordinator.create()
+        planned_trip_administrator.plannedTrips = []
+        return planned_trip_administrator
  
+    
+    def addTrip(self, plannedTrip):
+        errors = self.trip_validator.validate(plannedTrip)
+        if not errors:
+            self.plannedTrips.append(plannedTrip)
+        return errors
+    
+    def addTrips(self, plannedTrips):
+        dict_errors = {}
+        for p in plannedTrips:
+            errors = self.addTrip(p)
+            if not errors:
+                dict_errors[p.date] = errors
+        
+        return dict_errors
+
+            
