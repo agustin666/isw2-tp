@@ -23,6 +23,30 @@ class ScheduleForm(forms.Form):
     car = fields.BooleanField(label='Ofrece auto?', required=False)
     avalable_seats = fields.IntegerField(label='lugares')
 
+class UserRegistrationForm(forms.Form):
+    user_name_field = fields.CharField(label='Nombre')
+    email_field = fields.EmailField(label='E-mail')
+    password_field = fields.CharField(label='Password', widget=PasswordInput())
+
+class RegistrationScreen(View):
+
+    def get(self, request, *args, **kwargs):
+        form = UserRegistrationForm()
+        context = { 'form': form }
+        return TemplateResponse(request, 'registration.html', context)
+    
+    def post(self, request, *args, **kwargs):
+        filled_form = UserRegistrationForm(request.POST)
+        if filled_form.is_valid():
+            user_name = filled_form.cleaned_data['user_name_field']
+            user_email = filled_form.cleaned_data['email_field']
+            user_password = filled_form.cleaned_data['password_field']
+            user = User.create(user_name, user_email, user_password)
+            return HttpResponseRedirect('login')
+        else:
+            context = { 'form': filled_form }
+            return TemplateResponse(request, 'registration.html', context)
+
 #La pantalla de login
 class LoginScreen(View):
     
@@ -35,8 +59,9 @@ class LoginScreen(View):
         filled_form = UserForm(request.POST)
         user_email = filled_form.data['email_field']
         user_password = filled_form.data['password_field']
-        user = User.create(user_email, user_password)
-        if user.is_registered():
+        users = Users.create()
+        if users.user_is_registered(user_email, user_password):
+            request.session['user'] = users.get_user_with(user_email, user_password)
             return HttpResponseRedirect('schedule')
         else:
             context = { 'form': filled_form }

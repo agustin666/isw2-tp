@@ -1,16 +1,33 @@
+class Users(object):
+    
+    @classmethod
+    def create(cls):
+        users = cls()
+        user1 = User.create('David Trezeguet', 'demo@carpooling.com.ar', 'asdasd')
+        users.list = [user1, ]
+        return users
+    
+    def user_is_registered(self, anEmail, aPassword):
+        for user in self.users:
+            if user.email == anEmail and user.password == aPassword:
+                return True
+        return False
+
+    def get_user_with(self, anEmail, aPassword):
+        for user in self.users:
+            if user.email == anEmail and user.password == aPassword:
+                return user
+        return None
+
 class User(object):
     
     @classmethod
-    def create(cls, anEmail, aPassword):
-        self = cls()
-        self.email = anEmail
-        self.password = aPassword
-        return self
-    
-    def is_registered(self):
-        valid_email = self.email == "demo@carpooling.com.ar"
-        valid_password = self.password == "asdasd"
-        return valid_email and valid_password
+    def create(cls, aName, anEmail, aPassword):
+        user = cls()
+        user.name = aName
+        user.email = anEmail
+        user.password = aPassword
+        return user
 
 class Zone(object):
 
