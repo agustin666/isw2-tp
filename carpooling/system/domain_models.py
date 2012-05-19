@@ -74,8 +74,8 @@ class PlannedTrip(object):
         planned_trip.route = aRoute
         return planned_trip
 
-	def capacity():
-		return capacity
+    def capacity(self):
+        return self.capacity
 
 class Interval(object):
 
@@ -103,24 +103,21 @@ class Date(object):
         date.day = aDay
         return date
     
-    def capacity():
-        return capacity
-    
 class PlannedTripAsDriver(PlannedTrip):
     
     capacity
     
-    def capacity():
-        return capacity
+    def capacity(self):
+        return self.capacity
     
 class PlannedTripAsPassenger(PlannedTrip):
     
-    def capacity():
+    def capacity(self):
         return 0
     
 class PlannedTripCoordinator(object):
     
-    def generateMatchings(plannedTrips):
+    def generateMatchings(self, plannedTrips):
         orderedPlannedTrips = sorted(plannedTrips, key=lambda plannedTrip: plannedTrip.capacity())
         matchings = list()
         
