@@ -54,3 +54,29 @@ class PlannedTrip(object):
         planned_trip.interval = anInterval
         planned_trip.route = aRoute
         return planned_trip
+
+class Interval(object):
+
+    @classmethod
+    def create(cls, aStartHour, anEndHour):
+        interval = cls()
+        interval.start_hour = aStartHour
+        interval.end_hour = anEndHour
+        return interval
+
+class Route(object):
+
+    @classmethod
+    def create(cls, aStartLocation, aFinishLocation):
+        route = cls()
+        route.start = aStartLocation
+        route.finish = aFinishLocation
+        return route
+
+class Date(object):
+
+    @classmethod
+    def create(cls, aDay):
+        date = cls()
+        date.day = aDay
+        return date
