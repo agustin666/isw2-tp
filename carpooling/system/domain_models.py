@@ -117,5 +117,11 @@ class PlannedTripCoordinator(object):
                 matchings.add(matching)
             
         return matchings  
-        
+      
+      
+    def matched(plannedTrip1, plannedTrip2):
+        return (plannedTrip1.route.start == plannedTrip2.route.start)
+    
+    
+      
  
