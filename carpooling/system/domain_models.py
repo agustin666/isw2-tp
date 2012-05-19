@@ -1,16 +1,33 @@
+class Users(object):
+    
+    @classmethod
+    def create(cls):
+        users = cls()
+        user1 = User.create('David Trezeguet', 'demo@carpooling.com.ar', 'asdasd')
+        users.list = [user1, ]
+        return users
+    
+    def user_is_registered(self, anEmail, aPassword):
+        for user in self.list:
+            if user.email == anEmail and user.password == aPassword:
+                return True
+        return False
+
+    def get_user_with(self, anEmail, aPassword):
+        for user in self.list:
+            if user.email == anEmail and user.password == aPassword:
+                return user
+        return None
+
 class User(object):
     
     @classmethod
-    def create(cls, anEmail, aPassword):
-        self = cls()
-        self.email = anEmail
-        self.password = aPassword
-        return self
-    
-    def is_registered(self):
-        valid_email = self.email == "demo@carpooling.com.ar"
-        valid_password = self.password == "asdasd"
-        return valid_email and valid_password
+    def create(cls, aName, anEmail, aPassword):
+        user = cls()
+        user.name = aName
+        user.email = anEmail
+        user.password = aPassword
+        return user
 
 class Zone(object):
 
@@ -46,8 +63,6 @@ class Location(object):
 
 class PlannedTrip(object):
 
-    capacity
-    
     @classmethod
     def create(cls, aUser, aDate, anInterval, aRoute):
         planned_trip = cls()
@@ -57,8 +72,8 @@ class PlannedTrip(object):
         planned_trip.route = aRoute
         return planned_trip
 
-	def capacity():
-		return capacity
+    def capacity(self):
+        return self.capacity
 
 class Interval(object):
 
@@ -86,24 +101,19 @@ class Date(object):
         date.day = aDay
         return date
     
-    def capacity():
-        return capacity
-    
 class PlannedTripAsDriver(PlannedTrip):
     
-    capacity
-    
-    def capacity():
-        return capacity
+    def capacity(self):
+        return self.capacity
     
 class PlannedTripAsPassenger(PlannedTrip):
     
-    def capacity():
+    def capacity(self):
         return 0
     
 class PlannedTripCoordinator(object):
     
-    def generateMatchings(plannedTrips):
+    def generateMatchings(self, plannedTrips):
         orderedPlannedTrips = sorted(plannedTrips, key=lambda plannedTrip: plannedTrip.capacity())
         matchings = list()
         

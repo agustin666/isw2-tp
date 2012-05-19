@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^login$', LoginScreen.as_view(), name="login"),
     #url(r'^logged$', LoggedScreen.as_view(), name="logged"),
     url(r'^schedule$', ScheduleScreen.as_view(), name="schedule"),
+    url(r'^registration$', RegistrationScreen.as_view(), name="registration"),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
