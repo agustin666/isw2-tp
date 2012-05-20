@@ -8,19 +8,21 @@ from django.http import HttpResponseRedirect
 
 from domain_models import *
 
+locations = Locations.create()
+
 #Formulario del usuario
 class UserForm(forms.Form):
     email_field = fields.EmailField(label='E-mail')
     password_field = fields.CharField(label='Password', widget=PasswordInput())
 
 #Formulario del schedule
+location_choices = [(location.name, location) for location in locations.get_all()]
 class ScheduleForm(forms.Form):
-    locations = Location.locations()
     day = fields.CharField(widget=fields.HiddenInput())
     in_schedule = fields.BooleanField(label='Viaja?', required=False)
-    start_location = fields.ChoiceField(label='Salida', choices=locations, required=False)
+    start_location = fields.ChoiceField(label='Salida', choices=location_choices, required=False)
     start_time = fields.TimeField(label='Horario', required=False)
-    finish_location = fields.ChoiceField(label='Llegada', choices=locations, required=False)
+    finish_location = fields.ChoiceField(label='Llegada', choices=location_choices, required=False)
     end_time = fields.TimeField(label='Horario', required=False)
     car = fields.BooleanField(label='Ofrece auto?', required=False)
     avalable_seats = fields.IntegerField(label='Lugares', required=False)
@@ -102,7 +104,9 @@ class ScheduleScreen(View):
                     user = request.session['user']
                     date = Date.create(form.cleaned_data['day'])
                     interval = Interval.create(form.cleaned_data['start_time'], form.cleaned_data['end_time'])
-                    route = Route.create(form.cleaned_data['start_location'], form.cleaned_data['finish_location'])
+                    start_location = locations.find_by_name(form.cleaned_data['start_location'])
+                    finish_location = locations.find_by_name(form.cleaned_data['finish_location'])
+                    route = Route.create(start_location, finish_location)
                     if form.cleaned_data['car']:
                         planned_trip = PlannedTripAsDriver.create(user, date, interval, route)
                     else:

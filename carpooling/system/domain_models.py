@@ -40,6 +40,28 @@ class Zone(object):
     def __unicode__(self):
         return self.name
 
+class Locations(object):
+    
+    @classmethod
+    def create(cls):
+        tigre = Zone.create('Tigre')
+        capfed = Zone.create('Capital Federal')
+        belgrano = Location.create('Belgrano', capfed)
+        monserrat = Location.create('Monserrat', capfed)
+        torcuato = Location.create('Don Torcuato', tigre)
+        locations = cls()
+        locations.list = [belgrano, monserrat, torcuato]
+        return locations
+    
+    def get_all(self):
+        return self.list
+    
+    def find_by_name(self, locationName):
+        for location in self.list:
+            if location.name == locationName:
+                return location
+        return None
+
 class Location(object):
 
     @classmethod
@@ -49,14 +71,7 @@ class Location(object):
         location.zone = aZone
         return location
 
-    @classmethod
-    def locations(cls):
-        tigre = Zone.create('Tigre')
-        capfed = Zone.create('Capital Federal')
-        belgrano = cls.create('Belgrano', capfed)
-        monserrat = cls.create('Monserrat', capfed)
-        torcuato = cls.create('Don Torcuato', tigre)
-        return ((belgrano.name, belgrano), (torcuato.name, torcuato), (monserrat.name, monserrat))
+        #return ((belgrano.name, belgrano), (torcuato.name, torcuato), (monserrat.name, monserrat))
     
     def __unicode__(self):
         return '%s, %s' % (self.name, self.zone.name)
@@ -112,7 +127,7 @@ class Validator(object):
 class DistanceValidator(Validator):
 
     def validate(self, aPlannedtrip):
-        if aPlannedtrip.route.start != aPlannedtrip.route.finish:
+        if aPlannedtrip.route.start.zone != aPlannedtrip.route.finish.zone:
             return ValidationResult.create(aPlannedtrip, "OK")
         else:
             return ValidationResult.create(aPlannedtrip, "ERROR", 
