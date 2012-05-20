@@ -27,6 +27,15 @@ class ScheduleForm(forms.Form):
     car = fields.BooleanField(label='Ofrece auto?', required=False)
     avalable_seats = fields.IntegerField(label='Lugares', required=False)
 
+    def clean(self):
+        cleaned_data = super(ScheduleForm, self).clean()
+        in_schedule = cleaned_data.get("in_schedule")
+        start_time = cleaned_data.get("start_time")
+        end_time = cleaned_data.get("end_time")
+        if in_schedule and (not start_time or not end_time):
+            raise forms.ValidationError("Debe especificar un horario de salida y llegada.")
+        return cleaned_data
+
 class UserRegistrationForm(forms.Form):
     user_name_field = fields.CharField(label='Nombre')
     email_field = fields.EmailField(label='E-mail')
