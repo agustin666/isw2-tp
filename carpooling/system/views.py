@@ -104,11 +104,9 @@ class ScheduleScreen(View):
                         planned_trip = PlannedTripAsPassenger.create(user, date, interval, route)
                     planned_trips.append(planned_trip)
             planned_trip_admin = PlannedTripAdministrator.create()
-            error_list = planned_trip_admin.addTrips(planned_trips)
-            import pdb; pdb.set_trace()
-            return TemplateResponse(request, 'planned_trips_errors.html', 
-                                    { 'planned_trips': planned_trips,
-                                      'error_list': error_list })
+            trips_with_errors = planned_trip_admin.addTrips(planned_trips)
+            return TemplateResponse(request, 'planned_trips.html', 
+                                    { 'trips_with_errors': trips_with_errors })
         else:
             context = { 'schedule_formset': schedule_formset }
             return TemplateResponse(request, 'schedule.html', context)
