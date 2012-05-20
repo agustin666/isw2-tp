@@ -1,4 +1,6 @@
 from django.utils.datetime_safe import datetime
+from abc import ABCMeta, abstractmethod
+
 class Users(object):
     
     @classmethod
@@ -8,15 +10,13 @@ class Users(object):
         users.list = [user1, ]
         return users
     
-    def user_is_registered(self, anEmail, aPassword):
-        for user in self.list:
-            if user.email == anEmail and user.password == aPassword:
-                return True
-        return False
+    def passwordOk(self, anEmail, aPassword):
+        user = self.get_user(anEmail)
+        return user and user.password == aPassword
 
-    def get_user_with(self, anEmail, aPassword):
+    def get_user(self, anEmail):
         for user in self.list:
-            if user.email == anEmail and user.password == aPassword:
+            if user.email == anEmail:
                 return user
         return None
 
@@ -41,6 +41,28 @@ class Zone(object):
     def __unicode__(self):
         return self.name
 
+class Locations(object):
+    
+    @classmethod
+    def create(cls):
+        tigre = Zone.create('Tigre')
+        capfed = Zone.create('Capital Federal')
+        belgrano = Location.create('Belgrano', capfed)
+        monserrat = Location.create('Monserrat', capfed)
+        torcuato = Location.create('Don Torcuato', tigre)
+        locations = cls()
+        locations.list = [belgrano, monserrat, torcuato]
+        return locations
+    
+    def get_all(self):
+        return self.list
+    
+    def find_by_name(self, locationName):
+        for location in self.list:
+            if location.name == locationName:
+                return location
+        return None
+
 class Location(object):
 
     @classmethod
@@ -50,23 +72,83 @@ class Location(object):
         location.zone = aZone
         return location
 
-    @classmethod
-    def locations(cls):
-        tigre = Zone.create('Tigre')
-        capfed = Zone.create('Capital Federal')
-        belgrano = cls.create('Belgrano', capfed)
-        monserrat = cls.create('Monserrat', capfed)
-        torcuato = cls.create('Don Torcuato', tigre)
-        return ((belgrano.name, belgrano), (torcuato.name, torcuato), (monserrat.name, monserrat))
+        #return ((belgrano.name, belgrano), (torcuato.name, torcuato), (monserrat.name, monserrat))
     
     def __unicode__(self):
         return '%s, %s' % (self.name, self.zone.name)
 
 class PlannedTrip(object):
+    __metaclass__ = ABCMeta
 
+    @classmethod
+    def create(cls, aUser, aDate, anInterval, aRoute):
+        planned_trip = cls()
+        planned_trip.user = aUser
+        planned_trip.date = aDate
+        planned_trip.interval = anInterval
+        planned_trip.route = aRoute
+        return planned_trip
+
+    @abstractmethod
     def capacity(self):
         pass
+
+class PlannedTripValidator(object):
+ 
+    @classmethod
+    def create(cls):
+        ptv = cls()
+        ptv.validators = []
+        return ptv
     
+    def add(self, validator):
+        self.validators.append(validator)
+        return
+    
+    def validate(self, aPlannedTrip):
+        validation_errors = []
+        for validator in self.validators:
+            result = validator.validate(aPlannedTrip)
+            if result.is_error():
+                validation_errors.append(result)
+        return validation_errors
+
+class Validator(object):
+    __metaclass__ = ABCMeta
+
+    @classmethod
+    def create(cls):
+        validator = cls()
+        return validator
+
+    @abstractmethod
+    def validate(self, aPlannedtrip):
+        return
+
+class DistanceValidator(Validator):
+
+    def validate(self, aPlannedtrip):
+        if aPlannedtrip.route.start.zone != aPlannedtrip.route.finish.zone:
+            return ValidationResult.create(aPlannedtrip, "OK")
+        else:
+            return ValidationResult.create(aPlannedtrip, "ERROR", 
+                                           "El viaje debe ser de 20km o mas " + 
+                                           "de distancia")
+    
+class ValidationResult(object):
+
+    @classmethod
+    def create(cls, aSubject, aType, aMessage=''):
+        validation_result = cls()
+        validation_result.subject = aSubject
+        validation_result.type = aType
+        validation_result.message = aMessage
+        return validation_result
+    
+    def is_error(self):
+        return self.type == "ERROR"
+
+
 class Interval(object):
 
     @classmethod
@@ -103,11 +185,7 @@ class PlannedTripAsDriver(PlannedTrip):
 
     @classmethod
     def create(cls, aUser, aDate, anInterval, aRoute, aCapacity):
-        planned_trip_as_driver = cls()
-        planned_trip_as_driver.user = aUser
-        planned_trip_as_driver.date = aDate
-        planned_trip_as_driver.interval = anInterval
-        planned_trip_as_driver = aRoute
+        planned_trip_as_driver = super(PlannedTrip,self).create(aUser, aDate, anInterval, aRoute)
         planned_trip_as_driver.capacity = aCapacity
         return planned_trip_as_driver
     
@@ -115,15 +193,6 @@ class PlannedTripAsDriver(PlannedTrip):
         return self.capacity
     
 class PlannedTripAsPassenger(PlannedTrip):
-
-    @classmethod
-    def create(cls, aUser, aDate, anInterval, aRoute):
-        planned_trip_as_pass = cls()
-        planned_trip_as_pass.user = aUser
-        planned_trip_as_pass.date = aDate
-        planned_trip_as_pass.interval = anInterval
-        planned_trip_as_pass = aRoute
-        return planned_trip_as_pass
     
     def capacity(self):
         return 0

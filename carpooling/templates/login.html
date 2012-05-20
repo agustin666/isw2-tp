@@ -4,10 +4,11 @@
 
 <h2>Login</h2>
 
+{% if error_message %}{{error_message}}{% endif %}
+
 <form method="post">
   {% csrf_token %}
-	{{ form.email_field.label_tag }}: {{ form.email_field }}<br>
-	{{ form.password_field.label_tag }}: {{ form.password_field }}<br>
+	{{ form.as_p }}
 	<input type="submit" name="login" value="Entrar"/><br>
 </form>
 
