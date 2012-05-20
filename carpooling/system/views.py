@@ -1,3 +1,5 @@
+#coding=UTF-8
+
 from django.forms import *
 from django.forms.formsets import formset_factory
 from django.views.generic import View
@@ -21,7 +23,7 @@ class ScheduleForm(forms.Form):
     finish_location = fields.ChoiceField(label='Llegada', choices=locations, required=False)
     end_time = fields.TimeField(label='Horario', required=False)
     car = fields.BooleanField(label='Ofrece auto?', required=False)
-    avalable_seats = fields.IntegerField(label='lugares', required=False)
+    avalable_seats = fields.IntegerField(label='Lugares', required=False)
 
 class UserRegistrationForm(forms.Form):
     user_name_field = fields.CharField(label='Nombre')
@@ -57,15 +59,17 @@ class LoginScreen(View):
     
     def post(self, request, *args, **kwargs):
         filled_form = UserForm(request.POST)
-        user_email = filled_form.data['email_field']
-        user_password = filled_form.data['password_field']
-        users = Users.create()
-        if users.user_is_registered(user_email, user_password):
-            request.session['user'] = users.get_user_with(user_email, user_password)
-            return HttpResponseRedirect('schedule')
-        else:
-            context = { 'form': filled_form }
-            return TemplateResponse(request, 'login.html', context)
+        error_message = None
+        if filled_form.is_valid():
+            user_email = filled_form.data['email_field']
+            user_password = filled_form.data['password_field']
+            users = Users.create()
+            if users.passwordOk(user_email, user_password):
+                return HttpResponseRedirect('schedule')
+            else:
+                error_message = 'El usuario y/o contraseña ingresados son invalidos'
+        context = { 'form': filled_form, 'error_message': error_message }
+        return TemplateResponse(request, 'login.html', context)
 
 '''
 #La pantalla cuando me loguie

@@ -9,15 +9,13 @@ class Users(object):
         users.list = [user1, ]
         return users
     
-    def user_is_registered(self, anEmail, aPassword):
-        for user in self.list:
-            if user.email == anEmail and user.password == aPassword:
-                return True
-        return False
+    def passwordOk(self, anEmail, aPassword):
+        user = self.get_user(anEmail)
+        return user.password == aPassword
 
-    def get_user_with(self, anEmail, aPassword):
+    def get_user(self, anEmail):
         for user in self.list:
-            if user.email == anEmail and user.password == aPassword:
+            if user.email == anEmail:
                 return user
         return None
 
