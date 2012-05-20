@@ -65,6 +65,7 @@ class LoginScreen(View):
             user_password = filled_form.data['password_field']
             users = Users.create()
             if users.passwordOk(user_email, user_password):
+                request.session['user'] = users.get_user(user_email)
                 return HttpResponseRedirect('schedule')
             else:
                 error_message = 'El usuario y/o contraseña ingresados son invalidos'

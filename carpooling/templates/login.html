@@ -4,7 +4,7 @@
 
 <h2>Login</h2>
 
-{{error_message}}
+{% if error_message %}{{error_message}}{% endif %}
 
 <form method="post">
   {% csrf_token %}
