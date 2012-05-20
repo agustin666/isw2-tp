@@ -11,7 +11,7 @@ class Users(object):
     
     def passwordOk(self, anEmail, aPassword):
         user = self.get_user(anEmail)
-        return user.password == aPassword
+        return user and user.password == aPassword
 
     def get_user(self, anEmail):
         for user in self.list:
