@@ -15,10 +15,12 @@ urlpatterns = patterns('',
     #url(r'^logged$', LoggedScreen.as_view(), name="logged"),
     url(r'^schedule$', ScheduleScreen.as_view(), name="schedule"),
     url(r'^registration$', RegistrationScreen.as_view(), name="registration"),
+    url(r'^administrate$', AdministrateScreen.as_view(), name="administrate"),
+    url(r'^matchings$', MatchingScreen.as_view(), name="matchings"),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
+    
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
     

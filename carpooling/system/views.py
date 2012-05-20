@@ -105,3 +105,17 @@ class ScheduleScreen(View):
         else:
             context = { 'schedule_formset': schedule_formset }
             return TemplateResponse(request, 'schedule.html', context)
+        
+class AdministrateScreen(View):
+    
+    def get(self, request, *args, **kwargs):
+        return TemplateResponse(request, 'administrate.html')
+    
+class MatchingScreen(View):
+    
+    def get(self, request,*args, **kwargs):
+        administrator = PlannedTripAdministrator.create()
+        matchings = administrator.generateMatchings()
+        context = { 'matchings': matchings }
+        
+        return TemplateResponse(request, 'matchings.html', context) 
