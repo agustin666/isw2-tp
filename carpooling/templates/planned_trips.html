@@ -8,13 +8,19 @@
 <h3>Estos son tus viajes registrados</h3>
 
 <div>
-{% for planned_trip in planned_trips %}
+{% for planned_trip, errors in trips_with_errors %}
   <div>
     <h3>{{planned_trip.date.day}}</h3>
+    {% for error in errors %}
+    Error: {{ error.message }}
+    {% empty %}
     Desde {{planned_trip.route.start}} a las {{planned_trip.interval.start_hour}}
     hasta {{planned_trip.route.finish}} a las {{planned_trip.interval.end_hour}}
+    {% endfor %}
   </div>
 {% endfor %}
+<p style="font-weight: bold;">En caso de haber errores, vuelva a la 
+  pantalla anterior y corríjalos</p>
 </div>
 
 {% endblock content %}

@@ -90,10 +90,12 @@ class PlannedTripValidator(object):
         return
     
     def validate(self, aPlannedTrip):
-        validation_results = []
+        validation_errors = []
         for validator in self.validators:
-            validation_results.append(validator.validate(aPlannedTrip))
-        return validation_results
+            result = validator.validate(aPlannedTrip)
+            if result.is_error():
+                validation_errors.append(result)
+        return validation_errors
 
 class Validator(object):
     __metaclass__ = ABCMeta
@@ -113,16 +115,22 @@ class DistanceValidator(Validator):
         if aPlannedtrip.route.start != aPlannedtrip.route.finish:
             return ValidationResult.create(aPlannedtrip, "OK")
         else:
-            return ValidationResult.create(aPlannedtrip, "ERROR")
+            return ValidationResult.create(aPlannedtrip, "ERROR", 
+                                           "El viaje debe ser de 20km o mas " + 
+                                           "de distancia")
     
 class ValidationResult(object):
 
     @classmethod
-    def create(cls, aSubject, aMessage):
+    def create(cls, aSubject, aType, aMessage=''):
         validation_result = cls()
         validation_result.subject = aSubject
+        validation_result.type = aType
         validation_result.message = aMessage
         return validation_result
+    
+    def is_error(self):
+        return self.type == "ERROR"
 
 class Interval(object):
 
@@ -204,15 +212,14 @@ class PlannedTripAdministrator(object):
         errors = self.trip_validator.validate(plannedTrip)
         if not errors:
             self.plannedTrips.append(plannedTrip)
-        return errors
+        return (plannedTrip, errors)
     
     def addTrips(self, plannedTrips):
-        dict_errors = {}
+        trips_with_errors =[]
         for p in plannedTrips:
-            errors = self.addTrip(p)
-            if not errors:
-                dict_errors[p.date] = errors
+            trip_with_errors = self.addTrip(p)
+            trips_with_errors.append(trip_with_errors)
         
-        return dict_errors
+        return trips_with_errors
 
             
