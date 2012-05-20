@@ -2,10 +2,12 @@
 
 {% block content %}
 
-<h2>Agenda</h2>
+<div style="float:right;">
+  <span>David Trezeguet</span>
+  <a href="{% url login %}">Logout</a>
+</div>
 
-<span>David Trezeguet</span>
-<a href="#">logout</a>
+<h2>Agenda</h2>
 
 <div>
   <form method="post" enctype="application/x-www-form-urlencoded">
