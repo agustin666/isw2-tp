@@ -64,6 +64,7 @@ class Location(object):
         return '%s, %s' % (self.name, self.zone.name)
 
 class PlannedTrip(object):
+    __metaclass__ = ABCMeta
 
     @classmethod
     def create(cls, aUser, aDate, anInterval, aRoute):
@@ -74,10 +75,11 @@ class PlannedTrip(object):
         planned_trip.route = aRoute
         return planned_trip
 
+    @abstractmethod
     def capacity(self):
         pass
 
-class PlannedTripValidatorCollection(object):
+class PlannedTripValidator(object):
     
     @classmethod
     def create(cls):
@@ -85,7 +87,7 @@ class PlannedTripValidatorCollection(object):
         ptv.validators = []
         return ptv
     
-    def add_validator(self, validator):
+    def add(self, validator):
         self.validators.append(validator)
         return
     
@@ -98,20 +100,24 @@ class PlannedTripValidatorCollection(object):
 class Validator(object):
     __metaclass__ = ABCMeta
 
+    @classmethod
+    def create(cls):
+        validator = cls()
+        return validator
+
     @abstractmethod
     def validate(self, aPlannedtrip):
         return
 
 class DistanceValidator(Validator):
 
-    def validate(self):
-        if plannedtrip.route.start != plannedtrip.route.finish:
-            return ValidationResult.create(aPlannedTrip, "OK")
+    def validate(self, aPlannedtrip):
+        if aPlannedtrip.route.start != aPlannedtrip.route.finish:
+            return ValidationResult.create(aPlannedtrip, "OK")
         else:
-            return ValidationResult.create(aPlannedTrip, "ERROR")
+            return ValidationResult.create(aPlannedtrip, "ERROR")
     
 class ValidationResult(object):
-    __metaclass__ = ABCMeta
 
     @classmethod
     def create(cls, aSubject, aMessage):
@@ -157,6 +163,11 @@ class PlannedTripAsPassenger(PlannedTrip):
         return 0
     
 class PlannedTripCoordinator(object):
+
+    @classmethod
+    def create(cls):
+        ptc = cls()
+        return ptc
     
     def generateMatchings(self, plannedTrips):
         orderedPlannedTrips = sorted(plannedTrips, key=lambda plannedTrip: plannedTrip.capacity())

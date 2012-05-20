@@ -98,17 +98,17 @@ class ScheduleScreen(View):
                     date = Date.create(form.cleaned_data['day'])
                     interval = Interval.create(form.cleaned_data['start_time'], form.cleaned_data['end_time'])
                     route = Route.create(form.cleaned_data['start_location'], form.cleaned_data['finish_location'])
-                    planned_trip = PlannedTrip.create(user, date, interval, route)
+                    if form.cleaned_data['car']:
+                        planned_trip = PlannedTripAsDriver.create(user, date, interval, route)
+                    else:
+                        planned_trip = PlannedTripAsPassenger.create(user, date, interval, route)
                     planned_trips.append(planned_trip)
             planned_trip_admin = PlannedTripAdministrator.create()
-            error_list = planned_trip_admin.add_trips(planned_trips)
-            if error_list:
-                return TemplateResponse(request, 'planned_trips_errors.html', 
-                                        { 'planned_trips': planned_trips,
-                                          'error_list': error_list })
-            else:
-                return TemplateResponse(request, 'planned_trips.html', 
-                                        { 'planned_trips': planned_trips })
+            error_list = planned_trip_admin.addTrips(planned_trips)
+            import pdb; pdb.set_trace()
+            return TemplateResponse(request, 'planned_trips_errors.html', 
+                                    { 'planned_trips': planned_trips,
+                                      'error_list': error_list })
         else:
             context = { 'schedule_formset': schedule_formset }
             return TemplateResponse(request, 'schedule.html', context)
