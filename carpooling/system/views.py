@@ -188,7 +188,6 @@ class MatchingScreen(View):
         planned_trip_admin = PlannedTripAdministrator.create()
         matchings = planned_trip_admin.generateMatchings(planned_trip_admin.plannedTrips())
         context = { 'matchings': matchings }
-        
         return TemplateResponse(request, 'matchings.html', context) 
 
 class DeleteUsers(View):

@@ -1,19 +1,22 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-  <title>Matchings</title>
-</head>
-<body>
-  <div>
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h2>Matchings generados</h2>
+
+<div>
   {% for m in matchings %}
     <div>
-      <h3>{{m.owner.date.day}}</h3>
-      	  {{m.owner.user.mail}}
+      <p>Dia: {{m.owner.date.day}}</p>
+      <p>Usuario con auto: {{m.owner.user.email}}</p>
+      <div>Usuarios restantes:
+        <ul>
           {% for t in m.trips %}
-          	{{t.user.mail}}
-          {% endfor %}	
+            <p>{{t.user.email}}</p>
+          {% endfor %}  
+        </ul>
+      </div>
     </div>
   {% endfor %}
-  </div>
-</body>
-</html>
+</div>
+{% endblock content %}

@@ -75,7 +75,10 @@ class Location(object):
         return location
 
         #return ((belgrano.name, belgrano), (torcuato.name, torcuato), (monserrat.name, monserrat))
-    
+
+    def __eq__(self, other):
+        return self.name == other.name
+
     def __unicode__(self):
         return '%s, %s' % (self.name, self.zone.name)
 
@@ -216,9 +219,8 @@ class PlannedTripCoordinator(object):
         ordered_planned_trips = sorted(planned_trips, key=lambda p: p.get_capacity(), reverse=True)
         matchings = []
         for t1 in ordered_planned_trips[:]:
-            import pdb; pdb.set_trace()
             if not ordered_planned_trips:
-                break    
+                break
             ordered_planned_trips.remove(t1)
             if(t1.get_capacity() > 0):
                 matching = Matching.create(t1)
@@ -230,7 +232,7 @@ class PlannedTripCoordinator(object):
                         matching.add(t2)
                 matchings.append(matching)
         
-        return matchings  
+        return matchings
       
       
     def matched(self, plannedTrip1, plannedTrip2):
@@ -263,7 +265,7 @@ class PlannedTripAdministrator(object):
         return trips_with_errors
     
     def generateMatchings(self, plannedTrips):
-        self.trip_coordinator.generateMatchings(plannedTrips)
+        return self.trip_coordinator.generateMatchings(plannedTrips)
         
     def plannedTrips(self):
         
@@ -275,6 +277,7 @@ class PlannedTripAdministrator(object):
         user4 = User.create("Lucas", "lucas@gmail.com", "facil")
         
         date1 = Date.create("Lunes")
+        date2 = Date.create("Martes")
         
         anInterval = Interval.create(datetime.strptime('10:00',"%H:%M"), datetime.strptime('18:00',"%H:%M"))
         
@@ -282,15 +285,25 @@ class PlannedTripAdministrator(object):
         llegada = Location.create('Torcuato', Zone.create("Tigre"))
         aRoute = Route.create(salida, llegada)
         
+        #Lunes
         p1 = PlannedTripAsDriver.create(user1, date1, anInterval, aRoute, 3)
         p2 = PlannedTripAsPassenger.create(user2, date1, anInterval, aRoute)
         p3 = PlannedTripAsPassenger.create(user3, date1, anInterval, aRoute)
         p4 = PlannedTripAsPassenger.create(user4, date1, anInterval, aRoute)
+        #Martes
+        p5 = PlannedTripAsDriver.create(user2, date2, anInterval, aRoute, 3)
+        p6 = PlannedTripAsPassenger.create(user1, date2, anInterval, aRoute)
+        p7 = PlannedTripAsPassenger.create(user3, date2, anInterval, aRoute)
+        p8 = PlannedTripAsPassenger.create(user4, date2, anInterval, aRoute)
         
         planned_trips.append(p1)
         planned_trips.append(p2)
         planned_trips.append(p3)
         planned_trips.append(p4)
+        planned_trips.append(p5)
+        planned_trips.append(p6)
+        planned_trips.append(p7)
+        planned_trips.append(p8)
         
         return planned_trips
 
