@@ -18,6 +18,8 @@ urlpatterns = patterns('',
     url(r'^planned-trips$', SavedPlannedTripsScreen.as_view(), name="saved_planned_trips"),
     url(r'^planned-trips/delete$', DeletePlannedTrips.as_view(), name="planned_trips_delete"),
     url(r'^matchings$', MatchingScreen.as_view(), name="matchings"),
+    url(r'^users$', UsersScreen.as_view(), name="users"),
+    url(r'^users/delete$', DeleteUsers.as_view(), name="users_delete"),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

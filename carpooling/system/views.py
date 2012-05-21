@@ -11,29 +11,34 @@ from domain_models import *
 locations = Locations.create()
 
 #Para tener algo de persistencia
-class PlannedTripsSaver(object):
+class ObjectCollectionSaver(object):
     
     @classmethod
-    def load(cls, request):
+    def load(cls, request, name):
         pts = cls()
         pts.session = request.session
-        if not 'planned_trips' in pts.session:
-            pts.session['planned_trips'] = []
-        pts.trips = pts.session['planned_trips']
+        if not name in pts.session:
+            pts.session[name] = []
+        pts.objects = pts.session[name]
         return pts
     
-    def add_trips(self, planned_trips):
-        self.trips += planned_trips
+    def add(self, object):
+        self.objects.append(object)
+        self.session.modified = True
+        return
+    
+    def add_many(self, objects):
+        self.objects += objects
         self.session.modified = True
         return
 
-    def clear_trips(self):
-        del self.trips[:]
+    def clear(self):
+        del self.objects[:]
         self.session.modified = True
         return
     
     def get_all(self):
-        return self.trips
+        return self.objects
 
 #Formulario del usuario
 class UserForm(forms.Form):
@@ -80,6 +85,8 @@ class RegistrationScreen(View):
             user_email = filled_form.cleaned_data['email_field']
             user_password = filled_form.cleaned_data['password_field']
             user = User.create(user_name, user_email, user_password)
+            saver = ObjectCollectionSaver.load(request, 'users')
+            saver.add(user)
             return redirect('login')
         else:
             context = { 'form': filled_form }
@@ -99,10 +106,11 @@ class LoginScreen(View):
         if filled_form.is_valid():
             user_email = filled_form.data['email_field']
             user_password = filled_form.data['password_field']
-            users = Users.create()
+            saver = ObjectCollectionSaver.load(request, 'users')
+            users = Users.create(saver.get_all())
             if users.passwordOk(user_email, user_password):
                 request.session['user'] = users.get_user(user_email)
-                return HttpResponseRedirect('schedule')
+                return redirect('schedule')
             else:
                 error_message = 'El usuario y/o contraseña ingresados son invalidos'
         context = { 'form': filled_form, 'error_message': error_message }
@@ -149,8 +157,8 @@ class ScheduleScreen(View):
                     planned_trips.append(planned_trip)
             planned_trip_admin = PlannedTripAdministrator.create()
             trips_with_errors = planned_trip_admin.addTrips(planned_trips)
-            pts = PlannedTripsSaver.load(request)
-            pts.add_trips(planned_trip_admin.planned_trips)
+            saver = ObjectCollectionSaver.load(request, 'planned_trips')
+            saver.add_many(planned_trip_admin.planned_trips)
             return TemplateResponse(request, 'planned_trips.html', 
                                     { 'trips_with_errors': trips_with_errors })
         else:
@@ -160,25 +168,40 @@ class ScheduleScreen(View):
 class SavedPlannedTripsScreen(View):
     
     def get(self, request, *args, **kwargs):
-        pts = PlannedTripsSaver.load(request)
-        spt = pts.get_all()
+        saver = ObjectCollectionSaver.load(request, 'planned_trips')
+        spt = saver.get_all()
         return TemplateResponse(request, 'saved_planned_trips.html', 
                                 {'spt': spt})
 
 class DeletePlannedTrips(View):
     
     def get(self, request, *args, **kwargs):
-        pts = PlannedTripsSaver.load(request)
-        pts.clear_trips()
+        saver = ObjectCollectionSaver.load(request, 'planned_trips')
+        saver.clear()
         return redirect('saved_planned_trips')
     
 class MatchingScreen(View):
     
     def get(self, request,*args, **kwargs):
-        pts = PlannedTripsSaver.load(request)
-        planned_trips = pts.get_all()
+        saver = ObjectCollectionSaver.load(request, 'planned_trips')
+        planned_trips = saver.get_all()
         planned_trip_admin = PlannedTripAdministrator.create()
         matchings = planned_trip_admin.generateMatchings(planned_trip_admin.plannedTrips())
         context = { 'matchings': matchings }
         
         return TemplateResponse(request, 'matchings.html', context) 
+
+class DeleteUsers(View):
+    
+    def get(self, request, *args, **kwargs):
+        saver = ObjectCollectionSaver.load(request, 'users')
+        saver.clear()
+        return redirect('users')
+
+class UsersScreen(View):
+    
+    def get(self, request, *args, **kwargs):
+        saver = ObjectCollectionSaver.load(request, 'users')
+        users = saver.get_all()
+        return TemplateResponse(request, 'users.html', 
+                                {'users': users})
