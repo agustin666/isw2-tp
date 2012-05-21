@@ -91,7 +91,7 @@ class PlannedTrip(object):
 
     @abstractmethod
     def capacity(self):
-        pass
+        return
 
 class PlannedTripValidator(object):
  
@@ -185,7 +185,7 @@ class PlannedTripAsDriver(PlannedTrip):
 
     @classmethod
     def create(cls, aUser, aDate, anInterval, aRoute, aCapacity):
-        planned_trip_as_driver = super(PlannedTrip,self).create(aUser, aDate, anInterval, aRoute)
+        planned_trip_as_driver = super(PlannedTripAsDriver,cls).create(aUser, aDate, anInterval, aRoute)
         planned_trip_as_driver.capacity = aCapacity
         return planned_trip_as_driver
     
@@ -194,8 +194,14 @@ class PlannedTripAsDriver(PlannedTrip):
     
 class PlannedTripAsPassenger(PlannedTrip):
     
+    @classmethod
+    def create(cls, aUser, aDate, anInterval, aRoute):
+        planned_trip_as_driver = super(PlannedTripAsPassenger,cls).create(aUser, aDate, anInterval, aRoute)
+        planned_trip_as_driver.capacity = 0
+        return planned_trip_as_driver
+    
     def capacity(self):
-        return 0
+        return self.capacity
     
 class PlannedTripCoordinator(object):
     
@@ -205,7 +211,7 @@ class PlannedTripCoordinator(object):
         return planned_trip_coordinator
     
     def generateMatchings(self, planned_trips):
-        ordered_planned_trips = reverse(sorted(planned_trips, key=lambda planned_trip: planned_trip.capacity()))
+        ordered_planned_trips = sorted(planned_trips, key=lambda p: p.capacity).reverse()
         matchings = []
         
         for t1 in ordered_planned_trips[:]:
@@ -268,11 +274,11 @@ class PlannedTripAdministrator(object):
         
         date1 = Date.create("Lunes")
         
-        anInterval = Interval.create(time.strptime('10:00'), time.strptime('18:00'))
+        anInterval = Interval.create(datetime.strptime('10:00',"%H:%M"), datetime.strptime('18:00',"%H:%M"))
         
         salida = Location.create('Monserrat', Zone.create("Capital Federal"))
         llegada = Location.create('Torcuato', Zone.create("Tigre"))
-        aRoute = Route.create(salida, aFinishLocation)
+        aRoute = Route.create(salida, llegada)
         
         p1 = PlannedTripAsDriver.create(user1, date1, anInterval, aRoute, 3)
         p2 = PlannedTripAsPassenger.create(user2, date1, anInterval, aRoute)
@@ -284,7 +290,7 @@ class PlannedTripAdministrator(object):
         planned_trips.append(p3)
         planned_trips.append(p4)
         
-        return planned_tips
+        return planned_trips
 
 class Matching(object):
     
