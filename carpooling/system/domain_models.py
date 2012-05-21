@@ -236,7 +236,7 @@ class PlannedTripCoordinator(object):
       
       
     def matched(self, plannedTrip1, plannedTrip2):
-        return plannedTrip1.route == plannedTrip2.route and plannedTrip1.interval == plannedTrip2.interval
+        return plannedTrip1.route == plannedTrip2.route and plannedTrip1.interval == plannedTrip2.interval and plannedTrip1.date == plannedTrip2.date
     
     
 class PlannedTripAdministrator(object):
