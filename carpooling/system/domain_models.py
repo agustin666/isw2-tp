@@ -216,19 +216,21 @@ class PlannedTripCoordinator(object):
     def generateMatchings(self, planned_trips):
         ordered_planned_trips = sorted(planned_trips, key=lambda p: p.get_capacity(), reverse=True)
         matchings = []
-        
         for t1 in ordered_planned_trips[:]:
+            import pdb; pdb.set_trace()
+            if not ordered_planned_trips:
+                break    
             ordered_planned_trips.remove(t1)
             if(t1.get_capacity() > 0):
                 matching = Matching.create(t1)
                 for t2 in reversed(ordered_planned_trips):
-                    if(matching.full()):
+                    if matching.full():
                         break
                     if(self.matched(t1, t2)):
                         ordered_planned_trips.remove(t2)
                         matching.add(t2)
                 matchings.append(matching)
-            
+        
         return matchings  
       
       

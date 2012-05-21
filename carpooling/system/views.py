@@ -178,7 +178,7 @@ class MatchingScreen(View):
         pts = PlannedTripsSaver.load(request)
         planned_trips = pts.get_all()
         planned_trip_admin = PlannedTripAdministrator.create()
-        matchings = planned_trip_admin.generateMatchings(planned_trips)
+        matchings = planned_trip_admin.generateMatchings(planned_trip_admin.plannedTrips())
         context = { 'matchings': matchings }
         
         return TemplateResponse(request, 'matchings.html', context) 
