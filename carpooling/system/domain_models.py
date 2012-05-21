@@ -214,27 +214,31 @@ class PlannedTripCoordinator(object):
     def create(cls):
         planned_trip_coordinator = cls()
         return planned_trip_coordinator
-    
+
     def generateMatchings(self, planned_trips):
         ordered_planned_trips = sorted(planned_trips, key=lambda p: p.get_capacity(), reverse=True)
+        already_matched = []
         matchings = []
-        for t1 in ordered_planned_trips[:]:
-            if not ordered_planned_trips:
+        for t1 in ordered_planned_trips:
+            if len(already_matched) == len(planned_trips):
                 break
-            ordered_planned_trips.remove(t1)
+            if already_matched.__contains__(t1):
+                        continue
+            already_matched.append(t1)
             if(t1.get_capacity() > 0):
                 matching = Matching.create(t1)
-                for t2 in reversed(ordered_planned_trips):
+                for t2 in ordered_planned_trips:
+                    if already_matched.__contains__(t2):
+                        continue
                     if matching.full():
                         break
                     if(self.matched(t1, t2)):
-                        ordered_planned_trips.remove(t2)
+                        already_matched.append(t2)
                         matching.add(t2)
                 matchings.append(matching)
         
         return matchings
-      
-      
+
     def matched(self, plannedTrip1, plannedTrip2):
         return plannedTrip1.route == plannedTrip2.route and plannedTrip1.interval == plannedTrip2.interval and plannedTrip1.date == plannedTrip2.date
     
@@ -279,22 +283,24 @@ class PlannedTripAdministrator(object):
         date1 = Date.create("Lunes")
         date2 = Date.create("Martes")
         
-        anInterval = Interval.create(datetime.strptime('10:00',"%H:%M"), datetime.strptime('18:00',"%H:%M"))
+        interval1 = Interval.create(datetime.strptime('10:00',"%H:%M"), datetime.strptime('18:00',"%H:%M"))
+        interval2 = Interval.create(datetime.strptime('10:00',"%H:%M"), datetime.strptime('14:00',"%H:%M"))
         
         salida = Location.create('Monserrat', Zone.create("Capital Federal"))
         llegada = Location.create('Torcuato', Zone.create("Tigre"))
         aRoute = Route.create(salida, llegada)
+        reverseRoute = Route.create(llegada, salida)
         
         #Lunes
-        p1 = PlannedTripAsDriver.create(user1, date1, anInterval, aRoute, 3)
-        p2 = PlannedTripAsPassenger.create(user2, date1, anInterval, aRoute)
-        p3 = PlannedTripAsPassenger.create(user3, date1, anInterval, aRoute)
-        p4 = PlannedTripAsPassenger.create(user4, date1, anInterval, aRoute)
+        p1 = PlannedTripAsDriver.create(user1, date1, interval1, aRoute, 3)
+        p2 = PlannedTripAsPassenger.create(user2, date1, interval1, aRoute)
+        p3 = PlannedTripAsPassenger.create(user3, date1, interval1, aRoute)
+        p4 = PlannedTripAsPassenger.create(user4, date1, interval1, aRoute)
         #Martes
-        p5 = PlannedTripAsDriver.create(user2, date2, anInterval, aRoute, 3)
-        p6 = PlannedTripAsPassenger.create(user1, date2, anInterval, aRoute)
-        p7 = PlannedTripAsPassenger.create(user3, date2, anInterval, aRoute)
-        p8 = PlannedTripAsPassenger.create(user4, date2, anInterval, aRoute)
+        p5 = PlannedTripAsDriver.create(user2, date2, interval1, aRoute, 3)
+        p6 = PlannedTripAsPassenger.create(user1, date2, interval1, aRoute)
+        p7 = PlannedTripAsPassenger.create(user3, date2, interval2, aRoute)
+        p8 = PlannedTripAsPassenger.create(user4, date2, interval1, reverseRoute)
         
         planned_trips.append(p1)
         planned_trips.append(p2)
