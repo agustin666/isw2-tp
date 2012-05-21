@@ -4,10 +4,9 @@ from abc import ABCMeta, abstractmethod
 class Users(object):
     
     @classmethod
-    def create(cls):
+    def create(cls, usersList):
         users = cls()
-        user1 = User.create('David Trezeguet', 'demo@carpooling.com.ar', 'asdasd')
-        users.list = [user1, ]
+        users.list = usersList
         return users
     
     def passwordOk(self, anEmail, aPassword):
