@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<div style="float:right;">
+  <span>David Trezeguet</span>
+  <a href="{% url login %}">Logout</a>
+</div>
+
+<h2>Planificaciones guardadas</h2>
+
+<div>
+{% for planned_trip in spt %}
+  <div>
+    <p>Usuario: {{planned_trip.user}}</p>
+    <p>Fecha: {{planned_trip.date.day}}</p>
+    <p>Desde {{planned_trip.route.start}} a las {{planned_trip.interval.start_hour}}
+    hasta {{planned_trip.route.finish}} a las {{planned_trip.interval.end_hour}}</p>
+  </div>
+{% endfor %}
+</div>
+
+<a href="{% url planned_trips_delete %}">Borrar planificaciones guardadas</a>
+{% endblock content %}

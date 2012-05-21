@@ -11,11 +11,12 @@ urlpatterns = patterns('',
     # url(r'^$', 'carpooling.views.home', name='home'),
     # url(r'^carpooling/', include('carpooling.foo.urls')),
 
-    url(r'^login$', LoginScreen.as_view(), name="login"),
+    url(r'^$', LoginScreen.as_view(), name="login"),
     #url(r'^logged$', LoggedScreen.as_view(), name="logged"),
     url(r'^schedule$', ScheduleScreen.as_view(), name="schedule"),
     url(r'^registration$', RegistrationScreen.as_view(), name="registration"),
-    url(r'^administrate$', AdministrateScreen.as_view(), name="administrate"),
+    url(r'^planned-trips$', SavedPlannedTripsScreen.as_view(), name="saved_planned_trips"),
+    url(r'^planned-trips/delete$', DeletePlannedTrips.as_view(), name="planned_trips_delete"),
     url(r'^matchings$', MatchingScreen.as_view(), name="matchings"),
 
     # Uncomment the admin/doc line below to enable admin documentation:

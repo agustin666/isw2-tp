@@ -30,6 +30,9 @@ class User(object):
         user.password = aPassword
         return user
 
+    def __unicode__(self):
+        return '%s' % self.name
+
 class Zone(object):
 
     @classmethod
@@ -90,7 +93,7 @@ class PlannedTrip(object):
         return planned_trip
 
     @abstractmethod
-    def capacity(self):
+    def get_capacity(self):
         return
 
 class PlannedTripValidator(object):
@@ -189,7 +192,7 @@ class PlannedTripAsDriver(PlannedTrip):
         planned_trip_as_driver.capacity = aCapacity
         return planned_trip_as_driver
     
-    def capacity(self):
+    def get_capacity(self):
         return self.capacity
     
 class PlannedTripAsPassenger(PlannedTrip):
@@ -200,7 +203,7 @@ class PlannedTripAsPassenger(PlannedTrip):
         planned_trip_as_driver.capacity = 0
         return planned_trip_as_driver
     
-    def capacity(self):
+    def get_capacity(self):
         return self.capacity
     
 class PlannedTripCoordinator(object):
@@ -211,17 +214,17 @@ class PlannedTripCoordinator(object):
         return planned_trip_coordinator
     
     def generateMatchings(self, planned_trips):
-        ordered_planned_trips = sorted(planned_trips, key=lambda p: p.capacity).reverse()
+        ordered_planned_trips = sorted(planned_trips, key=lambda p: p.get_capacity(), reverse=True)
         matchings = []
         
         for t1 in ordered_planned_trips[:]:
             ordered_planned_trips.remove(t1)
-            if(t1.capacity() > 0):
+            if(t1.get_capacity() > 0):
                 matching = Matching.create(t1)
-                for t2 in reversed(ordered_planned_trips)[:]:
+                for t2 in reversed(ordered_planned_trips):
                     if(matching.full()):
                         break
-                    if(t1.matched(t2)):
+                    if(self.matched(t1, t2)):
                         ordered_planned_trips.remove(t2)
                         matching.add(t2)
                 matchings.append(matching)
@@ -229,7 +232,7 @@ class PlannedTripCoordinator(object):
         return matchings  
       
       
-    def matched(plannedTrip1, plannedTrip2):
+    def matched(self, plannedTrip1, plannedTrip2):
         return plannedTrip1.route == plannedTrip2.route and plannedTrip1.interval == plannedTrip2.interval
     
     
@@ -243,25 +246,23 @@ class PlannedTripAdministrator(object):
         planned_trip_administrator.trip_coordinator = PlannedTripCoordinator.create()
         planned_trip_administrator.planned_trips = []
         return planned_trip_administrator
- 
-    
+
     def addTrip(self, plannedTrip):
         errors = self.trip_validator.validate(plannedTrip)
         if not errors:
-            self.planned_trips.append(planned_trip)
-        return errors
-    
-    def addTrips(self, planned_trips):
-        dict_errors = {}
-        for p in planned_trips:
-            errors = self.add_trip(p)
-            if not errors:
-                dict_errors[p.date] = errors
+            self.planned_trips.append(plannedTrip)
+        return (plannedTrip, errors)
+     
+    def addTrips(self, plannedTrips):
+        trips_with_errors =[]
+        for p in plannedTrips:
+            trip_with_errors = self.addTrip(p)
+            trips_with_errors.append(trip_with_errors)
         
-        return dict_errors
+        return trips_with_errors
     
-    def generateMatchings(self):
-        self.trip_coordinator.generateMatchings(self.plannedTrips())
+    def generateMatchings(self, plannedTrips):
+        self.trip_coordinator.generateMatchings(plannedTrips)
         
     def plannedTrips(self):
         
@@ -299,7 +300,8 @@ class Matching(object):
         matching = cls()
         matching.owner = owner
         matching.trips = []
-        matching.free_places = owner.capacity()
+        matching.free_places = owner.get_capacity()
+        return matching
         
     def add(self, planned_trip):
         self.trips.append(planned_trip)

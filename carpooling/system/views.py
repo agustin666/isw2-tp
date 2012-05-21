@@ -4,11 +4,36 @@ from django.forms import *
 from django.forms.formsets import formset_factory
 from django.views.generic import View
 from django.template.response import TemplateResponse
-from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 
 from domain_models import *
 
 locations = Locations.create()
+
+#Para tener algo de persistencia
+class PlannedTripsSaver(object):
+    
+    @classmethod
+    def load(cls, request):
+        pts = cls()
+        pts.session = request.session
+        if not 'planned_trips' in pts.session:
+            pts.session['planned_trips'] = []
+        pts.trips = pts.session['planned_trips']
+        return pts
+    
+    def add_trips(self, planned_trips):
+        self.trips += planned_trips
+        self.session.modified = True
+        return
+
+    def clear_trips(self):
+        del self.trips[:]
+        self.session.modified = True
+        return
+    
+    def get_all(self):
+        return self.trips
 
 #Formulario del usuario
 class UserForm(forms.Form):
@@ -55,7 +80,7 @@ class RegistrationScreen(View):
             user_email = filled_form.cleaned_data['email_field']
             user_password = filled_form.cleaned_data['password_field']
             user = User.create(user_name, user_email, user_password)
-            return HttpResponseRedirect('login')
+            return redirect('login')
         else:
             context = { 'form': filled_form }
             return TemplateResponse(request, 'registration.html', context)
@@ -116,29 +141,44 @@ class ScheduleScreen(View):
                     start_location = locations.find_by_name(form.cleaned_data['start_location'])
                     finish_location = locations.find_by_name(form.cleaned_data['finish_location'])
                     route = Route.create(start_location, finish_location)
+                    avalable_seats = form.cleaned_data['avalable_seats']
                     if form.cleaned_data['car']:
-                        planned_trip = PlannedTripAsDriver.create(user, date, interval, route)
+                        planned_trip = PlannedTripAsDriver.create(user, date, interval, route, avalable_seats)
                     else:
                         planned_trip = PlannedTripAsPassenger.create(user, date, interval, route)
                     planned_trips.append(planned_trip)
             planned_trip_admin = PlannedTripAdministrator.create()
             trips_with_errors = planned_trip_admin.addTrips(planned_trips)
+            pts = PlannedTripsSaver.load(request)
+            pts.add_trips(planned_trip_admin.planned_trips)
             return TemplateResponse(request, 'planned_trips.html', 
                                     { 'trips_with_errors': trips_with_errors })
         else:
             context = { 'schedule_formset': schedule_formset }
             return TemplateResponse(request, 'schedule.html', context)
         
-class AdministrateScreen(View):
+class SavedPlannedTripsScreen(View):
     
     def get(self, request, *args, **kwargs):
-        return TemplateResponse(request, 'administrate.html')
+        pts = PlannedTripsSaver.load(request)
+        spt = pts.get_all()
+        return TemplateResponse(request, 'saved_planned_trips.html', 
+                                {'spt': spt})
+
+class DeletePlannedTrips(View):
+    
+    def get(self, request, *args, **kwargs):
+        pts = PlannedTripsSaver.load(request)
+        pts.clear_trips()
+        return redirect('saved_planned_trips')
     
 class MatchingScreen(View):
     
     def get(self, request,*args, **kwargs):
-        administrator = PlannedTripAdministrator.create()
-        matchings = administrator.generateMatchings()
+        pts = PlannedTripsSaver.load(request)
+        planned_trips = pts.get_all()
+        planned_trip_admin = PlannedTripAdministrator.create()
+        matchings = planned_trip_admin.generateMatchings(planned_trips)
         context = { 'matchings': matchings }
         
         return TemplateResponse(request, 'matchings.html', context) 

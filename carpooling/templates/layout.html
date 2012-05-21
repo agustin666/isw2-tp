@@ -6,7 +6,9 @@
   <div id="menu">
     <a href="{% url login %}">Login</a>
     <a href="{% url registration %}">Registración</a>
-    <a href="{% url schedule %}">Agenda</a>
+    <a href="{% url schedule %}">Cargar planificacion de viajes</a>
+    <a href="{% url saved_planned_trips %}">Ver planificaciones</a>
+    <a href="{% url matchings %}">Generar matchings</a>
   </div>
   {% block content %}{% endblock content %}
 </body>
